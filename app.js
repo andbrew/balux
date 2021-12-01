@@ -1,34 +1,40 @@
-function query(args) {
-	var querys = {
-		cast:
-		`SELECT actor_id, name
-		FROM actor LEFT JOIN person
-		ON actor.actor_id = person.id
-		WHERE movie_id = '${args["movie_id"]}';`
-	};
-	return querys[args["alias"]];
-}
-
-var mysql = require("mysql");
+var mysql = require('mysql');
 
 var balux = mysql.createConnection({
-	host: "localhost",
-	user: "alvin",
-	password: "galletaBernardi",
-	database: "balux"
+	host: 'localhost',
+	user: 'alvin',
+	password: 'galletaBernardi',
+	database: 'balux',
+	multipleStatements: true
 });
 
-balux.connect(err => {
-	if(err) throw err;
-	console.log("Connected!");
+balux.connect(error => {
+	if(error) throw error;
+	console.log('connected as id ' + balux.threadId);
 });
 
-balux.query(query({
-	alias: "cast",
-	movie_id: "0109830"
-}), (err, result) => {
-	if(err) throw err;
-	console.log(result);
+/*
+balux.query({
+	sql: 'SELECT COUNT(*) FROM ??;',
+	values: ['movie']
+}, (error, results) => {
+	if(error) throw error;
+	console.log(results)
 });
+*/
 
+function winner(year) {
+	var rows;
+	balux.query({
+		sql: 'SELECT movie_id FROM oscar WHERE oscar.year = ?;',
+		values: [year]
+	}, (error, results) => {
+		if(error) throw error;
+		rows = results;
+		console.log(rows);
+	});
+	return rows;
+}
+
+console.log(winner(2001));
 balux.end();
