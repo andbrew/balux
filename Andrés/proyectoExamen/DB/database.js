@@ -3,8 +3,8 @@ const boxen = require('boxen');
 
 const mysqlConnection = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: 'Genetica12018',
+    user: 'alvin',
+    password: 'galletaBernardi',
     database: 'balux',
     multipleStatements: true
 });
