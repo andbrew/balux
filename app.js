@@ -13,28 +13,34 @@ balux.connect(error => {
 	console.log('connected as id ' + balux.threadId);
 });
 
-/*
-balux.query({
-	sql: 'SELECT COUNT(*) FROM ??;',
-	values: ['movie']
-}, (error, results) => {
-	if(error) throw error;
-	console.log(results)
-});
-*/
-
 function winner(year) {
-	var rows;
-	balux.query({
-		sql: 'SELECT movie_id FROM oscar WHERE oscar.year = ?;',
-		values: [year]
-	}, (error, results) => {
-		if(error) throw error;
-		rows = results;
-		console.log(rows);
+	return new Promise((resolve, reject) => {
+		balux.query({
+			sql: 'SELECT movie_id FROM oscar WHERE oscar.year = ?;',
+			values: [year]
+		}, (error, results) => {
+			if(error) throw error;
+			resolve(results[0]['movie_id']);
+		});
 	});
-	return rows;
 }
 
-console.log(winner(2001));
+function title(id) {
+	return new Promise((resolve, reject) => {
+		balux.query({
+			sql: 'SELECT name FROM movie WHERE id = ?;',
+			values: [id]
+		}, (error, results) => {
+			if(error) throw error;
+			resolve(results[0]['name']);
+		});
+	});
+}
+
+winner(2001)
+	.then(movie_id => title(movie_id))
+	.then(name => {
+		console.log(name);
+	})
+	.catch();
 balux.end();
